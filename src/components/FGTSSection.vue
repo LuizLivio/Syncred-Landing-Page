@@ -29,7 +29,7 @@
           <div class="hero-buttons">
             <a
               class="primary-btn"
-              href="https://wa.me/5513988304721?text=Olá! Gostaria de solicitar uma antecipação do meu FGTS."
+              href="https://wa.me/5513992006884?text=Olá! Gostaria de solicitar uma antecipação do meu FGTS."
               target="_blank"
               rel="noopener noreferrer"
             >Quero antecipar meu FGTS</a>
@@ -177,7 +177,7 @@ export default {
       if (this.isValidAmount) {
         const message = `Olá, gostaria de simular a antecipação do meu FGTS com saldo de ${this.fgtsAmount}.`;
         const encodedMessage = encodeURIComponent(message);
-        const whatsappUrl = `https://wa.me/5513988304721?text=${encodedMessage}`;
+        const whatsappUrl = `https://wa.me/5513992006884?text=${encodedMessage}`;
 
         window.open(whatsappUrl, '_blank');
       }

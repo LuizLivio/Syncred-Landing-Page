@@ -20,9 +20,9 @@
             <font-awesome-icon :icon="['fas', 'envelope']" />
             atendimento@syncredsolucoes.com.br
           </a>
-          <a href="tel:+5513988304721" class="contact-link">
+          <a href="tel:+5513992006884" class="contact-link">
             <font-awesome-icon :icon="['fas', 'phone']" />
-            (13) 98830-4721
+            (13) 99200-6884
           </a>
         </div>
 
@@ -38,7 +38,7 @@
         <!-- Company Info -->
         <div class="company-section">
           <span class="company-info">
-            <strong>SYNCRED SOLUÇÕES LTDA</strong> – CNPJ 12.345.678/0001-90 |
+            <strong>SYNCRED SOLUÇÕES LTDA</strong> – CNPJ 49.574.591/001-08 |
             Rua Antônio de Andrade Vieira – Boqueirão, Praia Grande – SP | CEP: 00000-000
           </span>
         </div>
@@ -48,7 +48,7 @@
 
   <!-- Fixed WhatsApp Button -->
   <a
-    href="https://wa.me/5513988304721?text=Olá! Gostaria de saber mais sobre os serviços da SynCred."
+    href="https://wa.me/5513992006884?text=Olá! Gostaria de saber mais sobre os serviços da SynCred."
     class="whatsapp-button"
     target="_blank"
     rel="noopener noreferrer"
