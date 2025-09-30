@@ -295,7 +295,7 @@ export default {
   }
 
   .nav-link {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
   }
 
   .cta-button {
@@ -304,7 +304,7 @@ export default {
   }
 
   .nav-menu {
-    gap: 1.5rem;
+    gap: 1.2rem;
   }
 }
 </style>
