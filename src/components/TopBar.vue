@@ -12,7 +12,8 @@
         <nav class="nav-menu">
           <a @click.prevent="scrollToSection('fgts')" class="nav-link">FGTS</a>
           <a @click.prevent="scrollToSection('about')" class="nav-link">Sobre nós</a>
-          <button @click="scrollToSection('partnership')" class="cta-button">Seja parceiro</button>
+          <a @click="scrollToSection('partnership')" class="nav-link">SynPartners</a>
+          <button @click="sendToWpp()" class="cta-button">Seja parceiro</button>
         </nav>
       </div>
     </div>
@@ -50,6 +51,13 @@ export default {
       } else {
         console.error('Element not found:', sectionId)
       }
+    },
+    sendToWpp() {
+      const message = `Olá, gostaria de ser parceiro da SynCred.`;
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappUrl = `https://wa.me/5513992006884?text=${encodedMessage}`;
+
+      window.open(whatsappUrl, '_blank');
     }
   }
 }

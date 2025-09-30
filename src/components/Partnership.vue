@@ -28,7 +28,7 @@
         <div class="hero-buttons">
           <a 
             class="primary-btn"
-            href="https://wa.me/5513988304721?text=Olá! Gostaria de ser parceiro da SynCred."
+            href="https://wa.me/5513992006884?text=Olá! Gostaria de ser parceiro da SynCred."
             target="_blank"
           >
             <span class="btn-text">🚀 Quero ser parceiro!</span>
