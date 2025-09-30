@@ -9,17 +9,11 @@
           </div>
         </router-link>
 
-        <nav class="nav-menu" :class="{ active: isMenuOpen }">
+        <nav class="nav-menu">
           <a @click.prevent="scrollToSection('fgts')" class="nav-link">FGTS</a>
           <a @click.prevent="scrollToSection('about')" class="nav-link">Sobre nós</a>
           <button @click="scrollToSection('partnership')" class="cta-button">Seja parceiro</button>
         </nav>
-
-        <button class="menu-toggle" @click="toggleMenu" aria-label="Toggle menu">
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
       </div>
     </div>
   </header>
@@ -28,58 +22,35 @@
 <script>
 export default {
   name: 'TopBar',
-  data() {
-    return {
-      isMenuOpen: false
-    }
-  },
   methods: {
-    toggleMenu() {
-      this.isMenuOpen = !this.isMenuOpen
-    },
-    closeMenu() {
-      this.isMenuOpen = false
-    },
     scrollToSection(sectionId) {
-      // Close mobile menu if open
-      this.closeMenu()
+      const element = document.getElementById(sectionId)
+      const mainContent = document.querySelector('.main-content')
 
-      // Wait a brief moment for menu to close
-      setTimeout(() => {
-        const element = document.getElementById(sectionId)
-        const mainContent = document.querySelector('.main-content')
+      console.log('Scrolling to:', sectionId, element, mainContent)
 
-        console.log('Scrolling to:', sectionId, element, mainContent)
+      if (element) {
+        const topBarHeight = 70 // TopBar height margin
 
-        if (element) {
-          const topBarHeight = 70 // TopBar height margin
-
-          if (mainContent) {
-            // Try scrolling the main-content container first
-            const elementTop = element.offsetTop
-            mainContent.scrollTo({
-              top: elementTop - topBarHeight,
-              behavior: 'smooth'
-            })
-          } else {
-            // Fallback to window scrolling
-            const elementTop = element.getBoundingClientRect().top + window.pageYOffset
-            window.scrollTo({
-              top: elementTop - topBarHeight,
-              behavior: 'smooth'
-            })
-          }
+        if (mainContent) {
+          // Try scrolling the main-content container first
+          const elementTop = element.offsetTop
+          mainContent.scrollTo({
+            top: elementTop - topBarHeight,
+            behavior: 'smooth'
+          })
         } else {
-          console.error('Element not found:', sectionId)
+          // Fallback to window scrolling
+          const elementTop = element.getBoundingClientRect().top + window.pageYOffset
+          window.scrollTo({
+            top: elementTop - topBarHeight,
+            behavior: 'smooth'
+          })
         }
-      }, 100)
+      } else {
+        console.error('Element not found:', sectionId)
+      }
     }
-  },
-  mounted() {
-    window.addEventListener('resize', this.closeMenu)
-  },
-  beforeUnmount() {
-    window.removeEventListener('resize', this.closeMenu)
   }
 }
 </script>
@@ -267,64 +238,41 @@ export default {
   box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
 }
 
-.menu-toggle {
-  display: none;
-  flex-direction: column;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
-}
-
-.menu-toggle span {
-  width: 25px;
-  height: 3px;
-  background: #374151;
-  margin: 3px 0;
-  transition: 0.3s;
-  border-radius: 2px;
-}
-
 @media (max-width: 768px) {
-  .nav-menu {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: white;
+  .container {
+    padding: 0.2rem 2rem;
+  }
+
+  .top-bar {
+    height: auto;
+  }
+
+  .nav-content {
     flex-direction: column;
-    padding: 2rem;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    transform: translateY(-100%);
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
+    gap: 0;
+    padding: 0.2rem 0;
   }
 
-  .nav-menu.active {
-    transform: translateY(0);
-    opacity: 1;
-    visibility: visible;
+  .logo {
+    justify-content: center;
+    padding-bottom: 1rem;
   }
 
-  .nav-menu gap {
-    gap: 1.5rem;
+  .nav-menu {
+    justify-content: center;
+    gap: 4rem;
+    padding: 0.1rem 0;
+    background: inherit;
+    width: 100%;
   }
 
-  .menu-toggle {
-    display: flex;
+  .nav-link {
+    font-size: 1rem;
   }
 
-  .menu-toggle.active span:nth-child(1) {
-    transform: rotate(-45deg) translate(-5px, 6px);
-  }
-
-  .menu-toggle.active span:nth-child(2) {
-    opacity: 0;
-  }
-
-  .menu-toggle.active span:nth-child(3) {
-    transform: rotate(45deg) translate(-5px, -6px);
+  .cta-button {
+    font-size: 1rem;
+    padding: 0.6rem 1.2rem;
   }
 }
 
@@ -336,6 +284,19 @@ export default {
   .logo-icon {
     width: 28px;
     height: 28px;
+  }
+
+  .nav-link {
+    font-size: 0.9rem;
+  }
+
+  .cta-button {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .nav-menu {
+    gap: 1.5rem;
   }
 }
 </style>

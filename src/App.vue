@@ -74,6 +74,7 @@ export default {
 
 @media (max-width: 768px) {
   .main-content {
+    top: 100px; /* Start below TopBar */
     bottom: 120px; /* Above 120px Footer */
   }
 }

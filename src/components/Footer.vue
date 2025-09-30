@@ -318,6 +318,8 @@ export default {
     gap: 1rem;
     height: 120px;
     padding: 0.5rem 0;
+    justify-content: 	space-evenly;
+    
   }
 
   .legal-section {
@@ -360,10 +362,11 @@ export default {
   }
 
   .footer-content {
-    font-size: 0.7rem;
-    gap: 0.8rem;
+    font-size: 0.5rem;
+    gap: 0.5rem;
     height: 120px;
     padding: 0.5rem 0;
+    justify-content: space-evenly;
   }
 
   .contact-section {
@@ -400,14 +403,6 @@ export default {
 }
 
 @media (max-width: 480px) {
-  .contact-section {
-    flex-direction: column;
-    gap: 0.3rem;
-    align-items: flex-start;
-  }
-}
-
-@media (max-width: 480px) {
   .footer {
     height: 140px;
     max-height: 140px;
@@ -420,6 +415,7 @@ export default {
     gap: 0.5rem;
     height: 140px;
     padding: 0.5rem 0;
+    flex-wrap: nowrap;
   }
 
   .social-section,
