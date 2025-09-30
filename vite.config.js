@@ -7,6 +7,7 @@ export default defineConfig({
       reactivityTransform: true
     })
   ],
+  base: '/Syncred-Landing-Page/',
   server: {
     port: 3000,
     open: true,
