@@ -53,7 +53,7 @@ export default {
       }
     },
     sendToWpp() {
-      const message = `Olá, gostaria de ser parceiro da SynCred.`;
+      const message = `Olá! Gostaria de me tornar parceiro da SynCred. Quais são as vantagens?`;
       const encodedMessage = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/5513992006884?text=${encodedMessage}`;
 

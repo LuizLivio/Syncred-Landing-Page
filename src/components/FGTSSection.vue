@@ -29,7 +29,7 @@
           <div class="hero-buttons">
             <a
               class="primary-btn"
-              href="https://wa.me/5513992006884?text=Olá! Gostaria de solicitar uma antecipação do meu FGTS."
+              href="https://wa.me/5513992006884?text=Tenho interesse em antecipar meu FGTS com a SynCred, pode me ajudar?"
               target="_blank"
               rel="noopener noreferrer"
             >Quero antecipar meu FGTS</a>

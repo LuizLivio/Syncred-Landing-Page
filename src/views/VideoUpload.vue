@@ -17,6 +17,8 @@
             <button @click="$refs.fileInput.click()" class="browse-btn">Procurar arquivo</button>
             <div class="supported-formats">
               <small>Formatos suportados: MP4, MOV, AVI, WMV (Max: 500MB)</small>
+              <br>
+              <small>O vídeo será salvo como: card-showcase.mp4</small>
             </div>
           </div>
 
@@ -31,37 +33,15 @@
               <button @click="removeFile" class="remove-btn">×</button>
             </div>
 
-            <div class="upload-progress" v-if="uploadProgress > 0">
-              <div class="progress-bar">
-                <div class="progress-fill" :style="{ width: uploadProgress + '%' }"></div>
-              </div>
-              <span class="progress-text">{{ uploadProgress.toFixed(2) }}% concluído</span>
+            <div v-if="uploadSuccess" class="success-message">
+              ✅ Vídeo substituído com sucesso!
             </div>
 
             <div class="upload-actions">
               <button @click="startUpload" :disabled="uploading" class="upload-btn">
-                {{ uploading ? 'Carregando...' : 'Carregar Vídeo' }}
+                {{ uploading ? 'Substituindo...' : 'Substituir Vídeo' }}
               </button>
               <button @click="removeFile" class="cancel-btn">Cancelar</button>
-            </div>
-          </div>
-        </div>
-
-        <div v-if="uploadedVideos.length > 0" class="uploaded-videos">
-          <h3>Vídeos carregados</h3>
-          <div class="video-list">
-            <div v-for="video in uploadedVideos" :key="video.id" class="video-item">
-              <div class="video-thumbnail">🎥</div>
-              <div class="video-info">
-                <h4>{{ video.name }}</h4>
-                <p>{{ video.uploadDate }}</p>
-                <span class="video-status">{{ video.status }}</span>
-              </div>
-              <div class="video-actions">
-                <button @click="useAsHeroVideo(video)" class="hero-btn">Utilizar</button>
-                <button @click="downloadVideo(video)" class="download-btn">Baixar</button>
-                <button @click="deleteVideo(video.id)" class="delete-btn">Apagar</button>
-              </div>
             </div>
           </div>
         </div>
@@ -71,8 +51,6 @@
 </template>
 
 <script>
-import { useVideoStore } from '../stores/videoStore'
-
 export default {
   name: 'VideoUpload',
   data() {
@@ -80,8 +58,7 @@ export default {
       selectedFile: null,
       isDragOver: false,
       uploading: false,
-      uploadProgress: 0,
-      uploadedVideos: []
+      uploadSuccess: false
     }
   },
   methods: {
@@ -103,59 +80,51 @@ export default {
       if (file.type.startsWith('video/')) {
         if (file.size <= 500 * 1024 * 1024) { // 500MB limit
           this.selectedFile = file
+          this.uploadSuccess = false
         } else {
-          alert('File size must be less than 500MB')
+          alert('O arquivo deve ter menos de 500MB')
         }
       } else {
-        alert('Please select a valid video file')
+        alert('Por favor, selecione um arquivo de vídeo válido')
       }
     },
     removeFile() {
       this.selectedFile = null
-      this.uploadProgress = 0
       this.uploading = false
+      this.uploadSuccess = false
       this.$refs.fileInput.value = ''
     },
-    startUpload() {
+    async startUpload() {
       if (!this.selectedFile) return
 
       this.uploading = true
-      this.uploadProgress = 0
+      this.uploadSuccess = false
 
-      // Simulate upload progress
-      const interval = setInterval(() => {
-        this.uploadProgress += Math.random() * 10
-        if (this.uploadProgress >= 100) {
-          this.uploadProgress = 100
-          clearInterval(interval)
+      try {
+        // Create FormData to send the file
+        const formData = new FormData()
+        formData.append('video', this.selectedFile)
 
+        // Send to backend (you'll need to implement this endpoint)
+        const response = await fetch('/api/upload-video', {
+          method: 'POST',
+          body: formData
+        })
+
+        if (response.ok) {
+          this.uploadSuccess = true
           setTimeout(() => {
-            this.completeUpload()
-          }, 500)
+            this.removeFile()
+          }, 2000)
+        } else {
+          alert('Erro ao substituir o vídeo')
         }
-      }, 200)
-    },
-    completeUpload() {
-      const video = {
-        id: Date.now(),
-        name: this.selectedFile.name,
-        uploadDate: new Date().toLocaleDateString(),
-        status: 'Processing',
-        file: this.selectedFile
+      } catch (error) {
+        console.error('Upload error:', error)
+        alert('Erro ao substituir o vídeo: ' + error.message)
+      } finally {
+        this.uploading = false
       }
-
-      this.uploadedVideos.unshift(video)
-
-      // Set the uploaded video as the hero video
-      const { setHeroVideo } = useVideoStore()
-      setHeroVideo(this.selectedFile)
-
-      this.removeFile()
-
-      // Simulate processing completion
-      setTimeout(() => {
-        video.status = 'Ready'
-      }, 3000)
     },
     formatFileSize(bytes) {
       if (bytes === 0) return '0 Bytes'
@@ -163,30 +132,6 @@ export default {
       const sizes = ['Bytes', 'KB', 'MB', 'GB']
       const i = Math.floor(Math.log(bytes) / Math.log(k))
       return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-    },
-    downloadVideo(video) {
-      // Create download link for the file
-      const url = URL.createObjectURL(video.file)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = video.name
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    },
-    deleteVideo(videoId) {
-      if (confirm('Are you sure you want to delete this video?')) {
-        this.uploadedVideos = this.uploadedVideos.filter(v => v.id !== videoId)
-      }
-    },
-    useAsHeroVideo(video) {
-      // Set the video as the hero video
-      const { setHeroVideo } = useVideoStore()
-      setHeroVideo(video.file)
-
-      // Show confirmation
-      alert(`"${video.name}" is now being used as the hero video!`);
     }
   }
 }
@@ -208,18 +153,11 @@ export default {
   font-size: 2.5rem;
   font-weight: 800;
   text-align: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 2rem;
   background: linear-gradient(135deg, #2563eb, #7c3aed);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-.upload-subtitle {
-  text-align: center;
-  color: #64748b;
-  font-size: 1.1rem;
-  margin-bottom: 3rem;
 }
 
 .upload-area {
@@ -229,7 +167,6 @@ export default {
   padding: 3rem;
   text-align: center;
   transition: all 0.3s ease;
-  margin-bottom: 3rem;
 }
 
 .upload-area.drag-over {
@@ -307,6 +244,7 @@ export default {
 
 .file-details {
   flex: 1;
+  text-align: left;
 }
 
 .file-details h4 {
@@ -342,27 +280,12 @@ export default {
   justify-content: center;
 }
 
-.upload-progress {
-  margin: 1rem 0;
-}
-
-.progress-bar {
-  background: #e2e8f0;
-  height: 8px;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 0.5rem;
-}
-
-.progress-fill {
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  height: 100%;
-  transition: width 0.3s ease;
-}
-
-.progress-text {
-  color: #64748b;
-  font-size: 0.875rem;
+.success-message {
+  padding: 1rem;
+  background: rgba(16, 185, 129, 0.1);
+  color: #059669;
+  border-radius: 10px;
+  font-weight: 600;
 }
 
 .upload-actions {
@@ -408,103 +331,6 @@ export default {
   box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
 }
 
-.uploaded-videos {
-  background: white;
-  border-radius: 20px;
-  padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-}
-
-.uploaded-videos h3 {
-  margin-bottom: 1.5rem;
-  color: #374151;
-}
-
-.video-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.video-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-  background: #f8fafc;
-  border-radius: 15px;
-}
-
-.video-thumbnail {
-  font-size: 2rem;
-}
-
-.video-info {
-  flex: 1;
-}
-
-.video-info h4 {
-  margin: 0 0 0.5rem 0;
-  color: #374151;
-}
-
-.video-info p {
-  margin: 0 0 0.5rem 0;
-  color: #64748b;
-  font-size: 0.875rem;
-}
-
-.video-status {
-  background: rgba(16, 185, 129, 0.1);
-  color: #059669;
-  padding: 0.25rem 0.75rem;
-  border-radius: 10px;
-  font-size: 0.875rem;
-}
-
-.video-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.hero-btn,
-.download-btn,
-.delete-btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.hero-btn {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-}
-
-.hero-btn:hover {
-  background: linear-gradient(135deg, #059669, #047857);
-}
-
-.download-btn {
-  background: #2563eb;
-  color: white;
-}
-
-.download-btn:hover {
-  background: #1d4ed8;
-}
-
-.delete-btn {
-  background: #ef4444;
-  color: white;
-}
-
-.delete-btn:hover {
-  background: #dc2626;
-}
-
 @media (max-width: 768px) {
   .upload-area {
     padding: 2rem 1rem;
@@ -521,17 +347,6 @@ export default {
 
   .upload-actions {
     flex-direction: column;
-  }
-
-  .video-item {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .video-actions {
-    width: 100%;
-    justify-content: center;
-    flex-wrap: wrap;
   }
 }
 </style>

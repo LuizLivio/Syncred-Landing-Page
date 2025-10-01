@@ -5,7 +5,7 @@
         <!-- Social Media -->
         <div class="social-section">
           <span class="label">SIGA-NOS!</span>
-          <a href="#" class="social-btn facebook" target="_blank" rel="noopener noreferrer">
+          <a href="https://www.facebook.com/share/1Cif7nc5F3" class="social-btn facebook" target="_blank" rel="noopener noreferrer">
             <font-awesome-icon :icon="['fab', 'facebook-f']" />
           </a>
           <a href="https://www.instagram.com/syncredfinanceira/" class="social-btn instagram" target="_blank" rel="noopener noreferrer">
@@ -39,7 +39,7 @@
         <div class="company-section">
           <span class="company-info">
             <strong>SYNCRED SOLUÇÕES LTDA</strong> – CNPJ 49.574.591/001-08 |
-            Rua Antônio de Andrade Vieira – Boqueirão, Praia Grande – SP | CEP: 00000-000
+            Rua Antônio de Andrade Vieira – Boqueirão, Praia Grande – SP | CEP: 11701-040
           </span>
         </div>
       </div>
