@@ -34,54 +34,57 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  /* background-image: url('/assets/pattern.png'); */
-  background-image: url('/img/logo-syncred-1.png');
-  background-repeat: repeat;
-  opacity: 0.05;
+  background-image: url(/Syncred-Landing-Page/assets/bg-glow-1.png);
+  background-repeat: no-repeat;
+  background-size: 104.17vw;
+  background-position: 36.46vw 30.56vh;
+  opacity: 0.;
   pointer-events: none;
   z-index: 0;
-  mask: linear-gradient(to bottom, black 0%, transparent 100%);
-  -webkit-mask: linear-gradient(to bottom, black 0%, transparent 100%);
+}
+
+#app::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url(/Syncred-Landing-Page/assets/bg-glow-2.png);
+  background-repeat: no-repeat;
+  background-size: 52.08vw;
+  background-position: 75.52vw -30.56vh;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .main-content {
   position: fixed;
-  top: 70px; /* Start below TopBar */
-  bottom: 60px; /* End above Footer */
+  top: 70px;
+  bottom: 60px;
   left: 0;
   right: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 20px 0;
-
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #1e2661;
-    border-radius: 5px;
-  }
-
-  scrollbar-width: auto;
 }
 
 @media (max-width: 1200px) {
   .main-content {
-    bottom: 120px; /* Above 120px Footer */
+    bottom: 120px;
   }
 }
 
 @media (max-width: 768px) {
   .main-content {
-    top: 100px; /* Start below TopBar */
-    bottom: 120px; /* Above 120px Footer */
+    top: 100px;
+    bottom: 120px;
   }
 }
 
 @media (max-width: 480px) {
   .main-content {
-    bottom: 140px; /* Above 140px Footer */
+    bottom: 140px;
   }
 }
 </style>

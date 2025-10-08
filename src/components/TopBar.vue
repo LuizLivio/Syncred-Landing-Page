@@ -10,9 +10,9 @@
         </router-link>
 
         <nav class="nav-menu">
-          <a @click.prevent="scrollToSection('fgts')" class="nav-link">FGTS</a>
-          <a @click.prevent="scrollToSection('about')" class="nav-link">Sobre nós</a>
-          <a @click="scrollToSection('partnership')" class="nav-link">SynPartners</a>
+          <router-link to="/fgts" class="nav-link">FGTS</router-link>
+          <router-link to="/synpartners" class="nav-link">SynPartners</router-link>
+          <router-link to="/about" class="nav-link">Sobre nós</router-link>
           <button @click="sendToWpp()" class="cta-button">Seja parceiro</button>
         </nav>
       </div>
@@ -24,34 +24,6 @@
 export default {
   name: 'TopBar',
   methods: {
-    scrollToSection(sectionId) {
-      const element = document.getElementById(sectionId)
-      const mainContent = document.querySelector('.main-content')
-
-      console.log('Scrolling to:', sectionId, element, mainContent)
-
-      if (element) {
-        const topBarHeight = 70 // TopBar height margin
-
-        if (mainContent) {
-          // Try scrolling the main-content container first
-          const elementTop = element.offsetTop
-          mainContent.scrollTo({
-            top: elementTop - topBarHeight,
-            behavior: 'smooth'
-          })
-        } else {
-          // Fallback to window scrolling
-          const elementTop = element.getBoundingClientRect().top + window.pageYOffset
-          window.scrollTo({
-            top: elementTop - topBarHeight,
-            behavior: 'smooth'
-          })
-        }
-      } else {
-        console.error('Element not found:', sectionId)
-      }
-    },
     sendToWpp() {
       const message = `Olá! Gostaria de me tornar parceiro da SynCred. Quais são as vantagens?`;
       const encodedMessage = encodeURIComponent(message);
@@ -134,10 +106,6 @@ export default {
     left: 0;
     opacity: 1;
   }
-  /* 40% {
-    left: 0;
-    opacity: 1;
-  } */
   75% {
     left: 0;
     opacity: 1;
@@ -196,7 +164,8 @@ export default {
 .nav-menu {
   display: flex;
   align-items: center;
-  gap: 4rem;
+  gap: 3rem;
+  white-space: nowrap;
 }
 
 .nav-link {
@@ -204,13 +173,13 @@ export default {
   text-decoration: none;
   color: var(--light-blue);
   font-weight: 500;
-  transition: color 0.2s ease;
+  transition: all 0.3s ease;
   position: relative;
   cursor: pointer;
 }
 
 .nav-link:hover {
-  color: #2563eb;
+  color: #60c0c2;
 }
 
 .nav-link::after {
@@ -219,31 +188,46 @@ export default {
   bottom: -4px;
   left: 0;
   width: 0;
-  height: 2px;
-  background: #2563eb;
-  transition: width 0.2s ease;
+  height: 3px;
+  background: linear-gradient(135deg, #4782a4, #60c0c2);
+  border-radius: 2px;
+  transition: width 0.3s ease;
 }
 
 .nav-link:hover::after {
   width: 100%;
 }
 
-.cta-button {
-  font-size: large;
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 50px;
+.nav-link.router-link-active {
+  color: #60c0c2;
   font-weight: 600;
+}
+
+.nav-link.router-link-active::after {
+  width: 100%;
+  background: linear-gradient(135deg, #4782a4, #60c0c2);
+  box-shadow: 0 0 8px rgba(96, 192, 194, 0.5);
+}
+
+.cta-button {
+  background: linear-gradient(135deg, #4782a4, #60c0c2);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 30px;
+  font-size: larger;
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
+  transition: all 0.3s ease;
+  text-align: center;
+  text-shadow: 3px 1px 4px #374151;
+  animation: ease-in-out 0.5s;
 }
 
 .cta-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.4);
+  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(71, 130, 164, 0.4);
 }
 
 @media (max-width: 768px) {
@@ -268,10 +252,14 @@ export default {
 
   .nav-menu {
     justify-content: center;
-    gap: 4rem;
+    gap: 1rem;
     padding: 0.1rem 0;
     background: inherit;
     width: 100%;
+
+    @media (min-width: 1200px) {
+      gap: 4rem;
+    }
   }
 
   .nav-link {

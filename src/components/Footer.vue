@@ -16,9 +16,9 @@
         <!-- Contact -->
         <div class="contact-section">
           <span class="label">CONTATOS</span>
-          <a href="mailto:Atendimento@syncredsolucoes.com.br" class="contact-link">
+          <a href="mailto:syncredsolucoes@gmail.com" class="contact-link">
             <font-awesome-icon :icon="['fas', 'envelope']" />
-            atendimento@syncredsolucoes.com.br
+            syncredsolucoes@gmail.com
           </a>
           <a href="tel:+5513992006884" class="contact-link">
             <font-awesome-icon :icon="['fas', 'phone']" />
@@ -72,7 +72,7 @@ export default {
   left: 0;
   right: 0;
   width: 100vw;
-  background: linear-gradient(135deg, rgba(22, 25, 48, 0.95), rgba(30, 58, 138, 0.9));
+  background: linear-gradient(135deg, rgb(21 23 27), rgb(28 46 57));
   backdrop-filter: blur(10px);
   border-top: 1px solid rgba(59, 130, 246, 0.2);
   box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
@@ -107,7 +107,6 @@ export default {
   letter-spacing: 0.5px;
 }
 
-/* Social Media Section */
 .social-section {
   display: flex;
   align-items: center;
@@ -140,7 +139,6 @@ export default {
   }
 }
 
-/* Contact Section */
 .contact-section {
   display: flex;
   align-items: center;
@@ -168,7 +166,6 @@ export default {
   }
 }
 
-/* Legal Section */
 .legal-section {
   flex: 1;
   max-width: 35%;
@@ -179,14 +176,10 @@ export default {
     line-height: 1.3;
     color: rgba(255, 255, 255, 0.6);
     text-align: left;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    display: block;
   }
 }
 
-/* Company Section */
 .company-section {
   flex-shrink: 0;
   max-width: 250px;
@@ -204,10 +197,9 @@ export default {
   }
 }
 
-/* Fixed WhatsApp Button */
 .whatsapp-button {
   position: fixed;
-  bottom: 80px; /* Above the fixed 60px footer */
+  bottom: 80px;
   right: 20px;
   width: 60px;
   height: 60px;
@@ -263,32 +255,6 @@ export default {
   &:hover svg {
     transform: scale(1.1);
   }
-
-  .whatsapp-text {
-    position: absolute;
-    font-size: 0.7rem;
-    font-weight: bold;
-    white-space: nowrap;
-    top: 65px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: white;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    transition: opacity 0.3s ease;
-  }
-
-  &:hover .whatsapp-text {
-    opacity: 1;
-  }
-
-  /* Show text if icon fails to load */
-  &:not(:has(svg)) .whatsapp-text {
-    position: static;
-    opacity: 1;
-    font-size: 0.8rem;
-    transform: none;
-  }
 }
 
 @keyframes whatsappPulse {
@@ -306,7 +272,6 @@ export default {
   }
 }
 
-/* Responsive Design */
 @media (max-width: 1200px) {
   .footer {
     height: 120px;
@@ -331,7 +296,6 @@ export default {
 
     .disclaimer {
       text-align: center;
-      -webkit-line-clamp: 2;
     }
   }
 
@@ -347,7 +311,7 @@ export default {
   }
 
   .whatsapp-button {
-    bottom: 140px; /* Above 120px footer */
+    bottom: 140px;
   }
 }
 
@@ -386,7 +350,6 @@ export default {
 
   .legal-section .disclaimer {
     font-size: 0.6rem;
-    -webkit-line-clamp: 2;
   }
 
   .company-section .company-info {
@@ -397,7 +360,7 @@ export default {
     width: 55px;
     height: 55px;
     font-size: 1.6rem;
-    bottom: 140px; /* Above 120px footer */
+    bottom: 140px;
     right: 15px;
   }
 }
@@ -426,7 +389,6 @@ export default {
   .legal-section .disclaimer {
     font-size: 0.55rem;
     line-height: 1.3;
-    -webkit-line-clamp: 2;
   }
 
   .company-section .company-info {
@@ -437,7 +399,7 @@ export default {
     width: 50px;
     height: 50px;
     font-size: 1.4rem;
-    bottom: 160px; /* Above 140px footer */
+    bottom: 160px;
     right: 12px;
 
     &::before {

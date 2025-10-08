@@ -1,12 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Home from '../views/Home.vue'
+import MainPage from '../views/MainPage.vue'
+import FGTS from '../views/FGTS.vue'
+import AboutUs from '../views/AboutUs.vue'
+import SynPartners from '../views/SynPartners.vue'
 import VideoUpload from '../views/VideoUpload.vue'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home
+    component: MainPage
+  },
+  {
+    path: '/fgts',
+    name: 'FGTS',
+    component: FGTS
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: AboutUs
+  },
+  {
+    path: '/synpartners',
+    name: 'SynPartners',
+    component: SynPartners
   },
   {
     path: '/sync-admin-upload-2024',

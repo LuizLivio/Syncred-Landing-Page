@@ -10,18 +10,15 @@ const __dirname = path.dirname(__filename)
 const app = express()
 const PORT = 3001
 
-// Configure multer for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = path.join(__dirname, 'public', 'assets')
-    // Ensure directory exists
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true })
     }
     cb(null, uploadPath)
   },
   filename: (req, file, cb) => {
-    // Always save as card-showcase.mp4
     cb(null, 'card-showcase.mp4')
   }
 })
@@ -29,10 +26,9 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage,
   limits: {
-    fileSize: 500 * 1024 * 1024 // 500MB limit
+    fileSize: 500 * 1024 * 1024
   },
   fileFilter: (req, file, cb) => {
-    // Accept video files only
     if (file.mimetype.startsWith('video/')) {
       cb(null, true)
     } else {
@@ -41,14 +37,12 @@ const upload = multer({
   }
 })
 
-// CORS middleware
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*')
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept')
   next()
 })
 
-// Upload endpoint
 app.post('/api/upload-video', upload.single('video'), (req, res) => {
   try {
     if (!req.file) {
@@ -66,7 +60,6 @@ app.post('/api/upload-video', upload.single('video'), (req, res) => {
   }
 })
 
-// Error handling middleware
 app.use((error, req, res, next) => {
   if (error instanceof multer.MulterError) {
     if (error.code === 'LIMIT_FILE_SIZE') {

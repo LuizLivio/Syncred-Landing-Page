@@ -78,7 +78,7 @@ export default {
     },
     selectFile(file) {
       if (file.type.startsWith('video/')) {
-        if (file.size <= 500 * 1024 * 1024) { // 500MB limit
+        if (file.size <= 500 * 1024 * 1024) {
           this.selectedFile = file
           this.uploadSuccess = false
         } else {
@@ -101,11 +101,9 @@ export default {
       this.uploadSuccess = false
 
       try {
-        // Create FormData to send the file
         const formData = new FormData()
         formData.append('video', this.selectedFile)
 
-        // Send to backend (you'll need to implement this endpoint)
         const response = await fetch('/api/upload-video', {
           method: 'POST',
           body: formData
