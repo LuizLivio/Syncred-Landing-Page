@@ -1,5 +1,6 @@
 // Configuração da API
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001'
+// Em desenvolvimento usa proxy do Vite, em produção usa a URL configurada
+const API_BASE_URL = import.meta.env.VITE_API_URL || ''
 
 export const API_ENDPOINTS = {
   LOGIN: `${API_BASE_URL}/api/login`,
