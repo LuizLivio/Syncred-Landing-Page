@@ -80,12 +80,18 @@ export default {
   methods: {
     async checkAuth() {
       try {
+        console.log('Checking auth at:', API_ENDPOINTS.CHECK_AUTH)
         const response = await fetch(API_ENDPOINTS.CHECK_AUTH, {
           credentials: 'include'
         })
+        console.log('Check auth response status:', response.status)
         const data = await response.json()
+        console.log('Check auth data:', data)
         if (!data.authenticated) {
+          console.log('Not authenticated, redirecting to login')
           this.$router.push('/admin/login')
+        } else {
+          console.log('Authenticated successfully')
         }
       } catch (error) {
         console.error('Auth check error:', error)

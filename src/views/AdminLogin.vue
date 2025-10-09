@@ -51,6 +51,7 @@ export default {
       error.value = ''
 
       try {
+        console.log('Logging in at:', API_ENDPOINTS.LOGIN)
         const response = await fetch(API_ENDPOINTS.LOGIN, {
           method: 'POST',
           headers: {
@@ -63,9 +64,12 @@ export default {
           }),
         })
 
+        console.log('Login response status:', response.status)
         const data = await response.json()
+        console.log('Login data:', data)
 
         if (response.ok) {
+          console.log('Login successful, redirecting to /admin')
           router.push('/admin')
         } else {
           error.value = data.error || 'Credenciais inválidas'
