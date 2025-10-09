@@ -2,7 +2,10 @@
   <div class="video-upload">
     <div class="container">
       <div class="upload-wrapper">
-        <h1 class="upload-title">Upload de vídeo</h1>
+        <div class="header">
+          <h1 class="upload-title">Upload de vídeo</h1>
+          <button @click="handleLogout" class="logout-btn">Sair</button>
+        </div>
 
         <div class="upload-area" :class="{ 'drag-over': isDragOver }"
              @drop="handleDrop"
@@ -17,8 +20,6 @@
             <button @click="$refs.fileInput.click()" class="browse-btn">Procurar arquivo</button>
             <div class="supported-formats">
               <small>Formatos suportados: MP4, MOV, AVI, WMV (Max: 500MB)</small>
-              <br>
-              <small>O vídeo será salvo como: card-showcase.mp4</small>
             </div>
           </div>
 
@@ -30,18 +31,27 @@
                 <p>{{ formatFileSize(selectedFile.size) }}</p>
                 <div class="file-type">{{ selectedFile.type }}</div>
               </div>
-              <button @click="removeFile" class="remove-btn">×</button>
+              <button v-if="!uploadSuccess" @click="removeFile" :disabled="uploading" class="remove-btn">×</button>
+            </div>
+
+            <div v-if="uploading" class="progress-container">
+              <div class="progress-bar">
+                <div class="progress-fill" :style="{ width: uploadProgress + '%' }"></div>
+              </div>
+              <div class="progress-text">{{ uploadProgress }}% - Enviando vídeo...</div>
             </div>
 
             <div v-if="uploadSuccess" class="success-message">
               ✅ Vídeo substituído com sucesso!
             </div>
 
-            <div class="upload-actions">
+            <div v-if="!uploadSuccess" class="upload-actions">
               <button @click="startUpload" :disabled="uploading" class="upload-btn">
                 {{ uploading ? 'Substituindo...' : 'Substituir Vídeo' }}
               </button>
-              <button @click="removeFile" class="cancel-btn">Cancelar</button>
+              <button @click="abortUpload" :disabled="!uploading" class="cancel-btn">
+                {{ uploading ? 'Abortar Upload' : 'Cancelar' }}
+              </button>
             </div>
           </div>
         </div>
@@ -51,6 +61,8 @@
 </template>
 
 <script>
+import { API_ENDPOINTS } from '../config/api'
+
 export default {
   name: 'VideoUpload',
   data() {
@@ -58,11 +70,41 @@ export default {
       selectedFile: null,
       isDragOver: false,
       uploading: false,
-      uploadSuccess: false
+      uploadSuccess: false,
+      uploadProgress: 0
     }
   },
+  async mounted() {
+    await this.checkAuth()
+  },
   methods: {
+    async checkAuth() {
+      try {
+        const response = await fetch(API_ENDPOINTS.CHECK_AUTH, {
+          credentials: 'include'
+        })
+        const data = await response.json()
+        if (!data.authenticated) {
+          this.$router.push('/admin/login')
+        }
+      } catch (error) {
+        console.error('Auth check error:', error)
+        this.$router.push('/admin/login')
+      }
+    },
+    async handleLogout() {
+      try {
+        await fetch(API_ENDPOINTS.LOGOUT, {
+          method: 'POST',
+          credentials: 'include'
+        })
+        this.$router.push('/admin/login')
+      } catch (error) {
+        console.error('Logout error:', error)
+      }
+    },
     handleDrop(e) {
+      if (this.uploading) return
       e.preventDefault()
       this.isDragOver = false
       const files = e.dataTransfer.files
@@ -71,6 +113,7 @@ export default {
       }
     },
     handleFileSelect(e) {
+      if (this.uploading) return
       const file = e.target.files[0]
       if (file) {
         this.selectFile(file)
@@ -89,39 +132,85 @@ export default {
       }
     },
     removeFile() {
+      if (this.uploading) return
       this.selectedFile = null
       this.uploading = false
       this.uploadSuccess = false
-      this.$refs.fileInput.value = ''
+      this.uploadProgress = 0
+      if (this.$refs.fileInput) {
+        this.$refs.fileInput.value = ''
+      }
+    },
+    abortUpload() {
+      if (this.uploadController) {
+        this.uploadController.abort()
+        this.uploadController = null
+      }
+      this.uploading = false
+      this.uploadProgress = 0
     },
     async startUpload() {
-      if (!this.selectedFile) return
+      if (!this.selectedFile || this.uploading) return
 
       this.uploading = true
       this.uploadSuccess = false
+      this.uploadProgress = 0
+      this.uploadController = new AbortController()
 
       try {
         const formData = new FormData()
         formData.append('video', this.selectedFile)
 
-        const response = await fetch('/api/upload-video', {
-          method: 'POST',
-          body: formData
+        const xhr = new XMLHttpRequest()
+
+        xhr.upload.addEventListener('progress', (e) => {
+          if (e.lengthComputable) {
+            this.uploadProgress = Math.round((e.loaded / e.total) * 100)
+          }
         })
 
-        if (response.ok) {
-          this.uploadSuccess = true
-          setTimeout(() => {
-            this.removeFile()
-          }, 2000)
-        } else {
-          alert('Erro ao substituir o vídeo')
-        }
+        const uploadPromise = new Promise((resolve, reject) => {
+          xhr.addEventListener('load', () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve(xhr.response)
+            } else {
+              reject(new Error('Erro ao substituir o vídeo'))
+            }
+          })
+
+          xhr.addEventListener('error', () => reject(new Error('Erro de rede')))
+          xhr.addEventListener('abort', () => reject(new Error('Upload abortado')))
+
+          xhr.open('POST', API_ENDPOINTS.UPLOAD_VIDEO)
+          xhr.withCredentials = true
+          xhr.send(formData)
+        })
+
+        this.uploadController.signal.addEventListener('abort', () => {
+          xhr.abort()
+        })
+
+        await uploadPromise
+
+        this.uploadProgress = 100
+        this.uploadSuccess = true
+        setTimeout(() => {
+          this.selectedFile = null
+          this.uploadSuccess = false
+          this.uploadProgress = 0
+          if (this.$refs.fileInput) {
+            this.$refs.fileInput.value = ''
+          }
+        }, 2000)
       } catch (error) {
         console.error('Upload error:', error)
-        alert('Erro ao substituir o vídeo: ' + error.message)
+        if (error.message !== 'Upload abortado') {
+          alert('Erro ao substituir o vídeo: ' + error.message)
+        }
+        this.uploadProgress = 0
       } finally {
         this.uploading = false
+        this.uploadController = null
       }
     },
     formatFileSize(bytes) {
@@ -137,9 +226,8 @@ export default {
 
 <style scoped>
 .video-upload {
-  min-height: 100vh;
-  padding: 120px 0 2rem;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  height: 100%;
+  background: #141519;
 }
 
 .upload-wrapper {
@@ -147,29 +235,48 @@ export default {
   margin: 0 auto;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
 .upload-title {
   font-size: 2.5rem;
   font-weight: 800;
-  text-align: center;
-  margin-bottom: 2rem;
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: white;
+  margin: 0;
+}
+
+.logout-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
 }
 
 .upload-area {
-  background: white;
-  border: 3px dashed #e2e8f0;
+  background: rgba(10, 17, 70, 0.3);
+  border: 3px dashed rgba(71, 130, 164, 0.4);
   border-radius: 20px;
-  padding: 3rem;
+  padding: 1rem;
   text-align: center;
   transition: all 0.3s ease;
 }
 
 .upload-area.drag-over {
-  border-color: #2563eb;
-  background: rgba(37, 99, 235, 0.05);
+  border-color: #4782a4;
+  background: rgba(71, 130, 164, 0.2);
 }
 
 .upload-placeholder {
@@ -181,17 +288,16 @@ export default {
 
 .upload-icon {
   font-size: 4rem;
-  margin-bottom: 1rem;
 }
 
 .upload-placeholder h3 {
   font-size: 1.5rem;
-  color: #374151;
+  color: var(--light-blue);
   margin: 0;
 }
 
 .upload-placeholder p {
-  color: #64748b;
+  color: #a0c4d4;
   margin: 0;
 }
 
@@ -200,7 +306,7 @@ export default {
 }
 
 .browse-btn {
-  background: linear-gradient(135deg, #2563eb, #7c3aed);
+  background: linear-gradient(135deg, #4782a4, #60c0c2);
   color: white;
   border: none;
   padding: 1rem 2rem;
@@ -213,12 +319,12 @@ export default {
 
 .browse-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+  box-shadow: 0 8px 25px rgba(71, 130, 164, 0.4);
 }
 
 .supported-formats {
   margin-top: 1rem;
-  color: #64748b;
+  color: #a0c4d4;
 }
 
 .file-selected {
@@ -232,7 +338,8 @@ export default {
   align-items: center;
   gap: 1rem;
   padding: 1.5rem;
-  background: #f8fafc;
+  background: rgba(0, 5, 40, 0.5);
+  border: 1px solid rgba(71, 130, 164, 0.2);
   border-radius: 15px;
 }
 
@@ -247,17 +354,17 @@ export default {
 
 .file-details h4 {
   margin: 0 0 0.5rem 0;
-  color: #374151;
+  color: var(--light-blue);
 }
 
 .file-details p {
   margin: 0 0 0.5rem 0;
-  color: #64748b;
+  color: #a0c4d4;
 }
 
 .file-type {
-  background: rgba(37, 99, 235, 0.1);
-  color: #2563eb;
+  background: rgba(71, 130, 164, 0.2);
+  color: #60c0c2;
   padding: 0.25rem 0.75rem;
   border-radius: 10px;
   font-size: 0.875rem;
@@ -278,10 +385,16 @@ export default {
   justify-content: center;
 }
 
+.remove-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .success-message {
   padding: 1rem;
-  background: rgba(16, 185, 129, 0.1);
-  color: #059669;
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
   border-radius: 10px;
   font-weight: 600;
 }
@@ -310,7 +423,7 @@ export default {
 
 .upload-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
 }
 
 .cancel-btn {
@@ -324,14 +437,52 @@ export default {
   transition: all 0.3s ease;
 }
 
-.cancel-btn:hover {
+.cancel-btn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+  box-shadow: 0 8px 25px rgba(239, 68, 68, 0.4);
+}
+
+.cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.progress-container {
+  padding: 1.5rem;
+  background: rgba(0, 5, 40, 0.5);
+  border: 1px solid rgba(71, 130, 164, 0.2);
+  border-radius: 15px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 30px;
+  background: rgba(71, 130, 164, 0.2);
+  border-radius: 15px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #10b981, #059669);
+  transition: width 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+}
+
+.progress-text {
+  text-align: center;
+  color: var(--light-blue);
+  font-weight: 600;
+  font-size: 1rem;
 }
 
 @media (max-width: 768px) {
   .upload-area {
-    padding: 2rem 1rem;
+    padding: 1rem;
   }
 
   .upload-title {

@@ -50,7 +50,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url(/Syncred-Landing-Page/assets/bg-glow-2.png);
+  background-image: url(/assets/bg-glow-2.png);
   background-repeat: no-repeat;
   background-size: 52.08vw;
   background-position: 75.52vw -30.56vh;
@@ -66,7 +66,6 @@ export default {
   right: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 20px 0;
 }
 
 @media (max-width: 1200px) {

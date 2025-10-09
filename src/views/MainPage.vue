@@ -18,6 +18,7 @@
                 autoplay
                 loop
                 playsinline
+                muted
                 controls
                 class="hero-video"
               >
@@ -40,6 +41,7 @@
               autoplay
               loop
               playsinline
+              muted
               controls
               class="hero-video"
             >

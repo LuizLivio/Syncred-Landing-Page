@@ -82,10 +82,8 @@ export default {
         return;
       }
 
-      // Convert to cents (divide by 100 to get real value)
       let realValue = parseInt(numbers) / 100;
 
-      // Format as Brazilian currency
       this.fgtsAmount = 'R$ ' + realValue.toLocaleString('pt-BR', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2

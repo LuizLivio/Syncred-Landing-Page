@@ -4,6 +4,7 @@ import FGTS from '../views/FGTS.vue'
 import AboutUs from '../views/AboutUs.vue'
 import SynPartners from '../views/SynPartners.vue'
 import VideoUpload from '../views/VideoUpload.vue'
+import AdminLogin from '../views/AdminLogin.vue'
 
 const routes = [
   {
@@ -27,7 +28,12 @@ const routes = [
     component: SynPartners
   },
   {
-    path: '/sync-admin-upload-2024',
+    path: '/admin/login',
+    name: 'AdminLogin',
+    component: AdminLogin
+  },
+  {
+    path: '/admin',
     name: 'VideoUpload',
     component: VideoUpload
   }
