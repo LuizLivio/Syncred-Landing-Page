@@ -35,6 +35,7 @@ jobs:
       
       - name: Build
         env:
+          VITE_ENV: production
           VITE_API_URL: ${{ secrets.VITE_API_URL }}
         run: npm run build
       

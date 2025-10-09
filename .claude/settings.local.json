@@ -4,7 +4,15 @@
       "Bash(npm install)",
       "Bash(npm run dev:*)",
       "Bash(git mv:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nFix session cookie authentication with Vite proxy\n\nResolve problema de autenticação onde o login retornava sucesso mas check-auth falhava.\nA causa era cookies de sessão não sendo enviados devido a requisições cross-origin.\n\nAlterações:\n- Adiciona proxy no Vite para redirecionar /api para o backend\n- Atualiza configuração da API para usar URLs relativas em desenvolvimento\n- Isso faz frontend e backend parecerem mesma origem para o navegador\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Read(//c/projetos/Syncred-Backend/**)"
     ],
     "deny": [],
     "ask": []

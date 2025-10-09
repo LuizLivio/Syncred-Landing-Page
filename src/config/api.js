@@ -1,6 +1,8 @@
 // Configuração da API
-// Em desenvolvimento usa proxy do Vite, em produção usa a URL configurada
-const API_BASE_URL = import.meta.env.VITE_API_URL || ''
+// Em development usa proxy do Vite (URLs relativas)
+// Em production usa VITE_API_URL (URL completa do backend)
+const isDevelopment = import.meta.env.VITE_ENV === 'development'
+const API_BASE_URL = isDevelopment ? '' : (import.meta.env.VITE_API_URL || '')
 
 export const API_ENDPOINTS = {
   LOGIN: `${API_BASE_URL}/api/login`,
