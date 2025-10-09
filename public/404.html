@@ -6,10 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SynCred</title>
     <meta name="description" content="SynCred" />
+    <script>
+      // Redirect to index.html with the path as a query parameter
+      // This allows the SPA router to handle the route
+      sessionStorage.redirect = location.href;
+    </script>
+    <meta http-equiv="refresh" content="0;URL='/Syncred-Landing-Page/'"></meta>
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" crossorigin src="/Syncred-Landing-Page/assets/index-BvHJisk5.js"></script>
-    <link rel="stylesheet" crossorigin href="/Syncred-Landing-Page/assets/index-qpp1HZf3.css">
   </body>
 </html>
